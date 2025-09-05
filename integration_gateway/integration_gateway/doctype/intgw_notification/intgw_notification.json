@@ -7,7 +7,7 @@
  "field_order": [
   "section_break_nhgc",
   "column_break_oiwb",
-  "payload"
+  "json_payload"
  ],
  "fields": [
   {
@@ -15,18 +15,18 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "payload",
-   "fieldtype": "JSON",
-   "label": "Payload"
-  },
-  {
    "fieldname": "column_break_oiwb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "json_payload",
+   "fieldtype": "JSON",
+   "label": "Json Payload"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-27 15:42:32.928233",
+ "modified": "2025-08-28 02:43:26.466065",
  "modified_by": "Administrator",
  "module": "Integration Gateway",
  "name": "INTGW Notification",
