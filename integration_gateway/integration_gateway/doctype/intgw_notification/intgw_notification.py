@@ -12,10 +12,6 @@ from jsonpath_ng.exceptions import JSONPathError
 class INTGWNotification(Document):
 
 	@frappe.whitelist(methods=["GET"])
-	def test_template(self):
-		return "Hey, i am alive!"
-
-	@frappe.whitelist(methods=["GET"])
 	def resolve_path(self, path: str, default: Optional[Any] = None, field_name: str = 'json_payload') -> Any:
 		"""
 		Resolves a JSONPath expression against the specified field content.
