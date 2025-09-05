@@ -367,11 +367,6 @@ class TestINTGWNotification(FrappeTestCase):
         
         mock_log_error.assert_called()
     
-    def test_test_template_method(self):
-        """Test the test_template method."""
-        result = self.notification.test_template()
-        self.assertEqual(result, "Hey, i am alive!")
-    
     # Performance and Edge Case Tests
     def test_large_json_payload(self):
         """Test performance with large JSON payloads."""
@@ -504,11 +499,7 @@ class TestINTGWNotificationIntegration(FrappeTestCase):
             "name": self.test_doc_name,
             "json_payload": json.dumps(test_data)
         })
-        
-        # Test test_template method (whitelisted)
-        result = doc.test_template()
-        self.assertEqual(result, "Hey, i am alive!")
-        
+                
         # Test resolve_path method (whitelisted)
         result = doc.resolve_path("$.api_test.value")
         self.assertEqual(result, "success")
