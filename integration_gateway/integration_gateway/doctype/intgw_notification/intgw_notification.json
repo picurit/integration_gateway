@@ -7,7 +7,14 @@
  "field_order": [
   "section_break_nhgc",
   "column_break_oiwb",
-  "json_payload"
+  "json_payload",
+  "section_break_tsbs",
+  "column_break_ghbd",
+  "doctype_reference",
+  "column_break_errj",
+  "field_reference",
+  "column_break_xfpk",
+  "value_reference"
  ],
  "fields": [
   {
@@ -22,11 +29,43 @@
    "fieldname": "json_payload",
    "fieldtype": "JSON",
    "label": "Json Payload"
+  },
+  {
+   "fieldname": "section_break_tsbs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "doctype_reference",
+   "fieldtype": "Link",
+   "label": "Doctype Reference",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "column_break_errj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "field_reference",
+   "fieldtype": "Data",
+   "label": "Field Reference"
+  },
+  {
+   "fieldname": "column_break_xfpk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "value_reference",
+   "fieldtype": "Data",
+   "label": "Value Reference"
+  },
+  {
+   "fieldname": "column_break_ghbd",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-28 02:43:26.466065",
+ "modified": "2025-09-06 11:56:34.612980",
  "modified_by": "Administrator",
  "module": "Integration Gateway",
  "name": "INTGW Notification",
