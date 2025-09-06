@@ -1,10 +1,16 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2025-08-27 13:45:14.202182",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "section_break_ygfe",
+  "column_break_unfz",
+  "title",
+  "column_break_lsbs",
+  "naming_series",
   "section_break_nhgc",
   "column_break_oiwb",
   "json_payload",
@@ -61,14 +67,38 @@
   {
    "fieldname": "column_break_ghbd",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title"
+  },
+  {
+   "fieldname": "column_break_lsbs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "INTGW-NOTIFICATION-.#######"
+  },
+  {
+   "fieldname": "column_break_unfz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ygfe",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-06 11:56:34.612980",
+ "modified": "2025-09-06 13:22:23.832425",
  "modified_by": "Administrator",
  "module": "Integration Gateway",
  "name": "INTGW Notification",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -84,7 +114,9 @@
    "write": 1
   }
  ],
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "title"
 }
