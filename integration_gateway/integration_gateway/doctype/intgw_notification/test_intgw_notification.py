@@ -546,109 +546,115 @@ class TestINTGWNotificationUpdatePath(FrappeTestCase):
         pass
     
     # Basic Update Tests
-    def test_update_simple_string_value(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_simple_string_value(self, mock_db_set):
         """Test updating a simple string value."""
-        self.notification.update_path("$.user.name", "Jane Doe")
-        
+        updated_json = self.notification.update_path("$.user.name", "Jane Doe")
+        self.assertEqual(updated_json["user"]["name"], "Jane Doe")
         result = self.notification.resolve_path("$.user.name")
         self.assertEqual(result, "Jane Doe")
     
-    def test_update_numeric_value(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_numeric_value(self, mock_db_set):
         """Test updating numeric values."""
-        self.notification.update_path("$.user.age", 35)
-        
+        updated_json = self.notification.update_path("$.user.age", 35)
+        self.assertEqual(updated_json["user"]["age"], 35)
         result = self.notification.resolve_path("$.user.age")
         self.assertEqual(result, 35)
-        
         # Test float value
-        self.notification.update_path("$.products[0].price", 1299.99)
+        updated_json = self.notification.update_path("$.products[0].price", 1299.99)
+        self.assertEqual(updated_json["products"][0]["price"], 1299.99)
         result = self.notification.resolve_path("$.products[0].price")
         self.assertEqual(result, 1299.99)
     
-    def test_update_boolean_value(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_boolean_value(self, mock_db_set):
         """Test updating boolean values."""
-        self.notification.update_path("$.user.is_active", True)
-        
+        updated_json = self.notification.update_path("$.user.is_active", True)
+        self.assertTrue(updated_json["user"]["is_active"])
         result = self.notification.resolve_path("$.user.is_active")
         self.assertTrue(result)
-        
-        self.notification.update_path("$.user.is_active", False)
+        updated_json = self.notification.update_path("$.user.is_active", False)
+        self.assertFalse(updated_json["user"]["is_active"])
         result = self.notification.resolve_path("$.user.is_active")
         self.assertFalse(result)
     
-    def test_update_nested_object_value(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_nested_object_value(self, mock_db_set):
         """Test updating values in nested objects."""
-        self.notification.update_path("$.user.preferences.theme", "dark")
-        
+        updated_json = self.notification.update_path("$.user.preferences.theme", "dark")
+        self.assertEqual(updated_json["user"]["preferences"]["theme"], "dark")
         result = self.notification.resolve_path("$.user.preferences.theme")
         self.assertEqual(result, "dark")
     
-    def test_update_array_element(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_array_element(self, mock_db_set):
         """Test updating specific array elements."""
-        self.notification.update_path("$.products[0].name", "Gaming Laptop")
-        
+        updated_json = self.notification.update_path("$.products[0].name", "Gaming Laptop")
+        self.assertEqual(updated_json["products"][0]["name"], "Gaming Laptop")
         result = self.notification.resolve_path("$.products[0].name")
         self.assertEqual(result, "Gaming Laptop")
-        
         # Verify other elements remain unchanged
         result = self.notification.resolve_path("$.products[1].name")
         self.assertEqual(result, "Mouse")
     
-    def test_update_array_element_by_negative_index(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_array_element_by_negative_index(self, mock_db_set):
         """Test updating array elements using negative indices."""
-        self.notification.update_path("$.metadata.numbers[-1]", 10)
-        
+        updated_json = self.notification.update_path("$.metadata.numbers[-1]", 10)
+        self.assertEqual(updated_json["metadata"]["numbers"][-1], 10)
         result = self.notification.resolve_path("$.metadata.numbers[-1]")
         self.assertEqual(result, 10)
     
-    def test_update_multiple_matching_paths(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_multiple_matching_paths(self, mock_db_set):
         """Test updating multiple paths that match a wildcard."""
-        # Add a category field to all products
-        self.notification.update_path("$.products[*].category", "Electronics")
-        
+        updated_json = self.notification.update_path("$.products[*].category", "Electronics")
+        self.assertTrue(all(p["category"] == "Electronics" for p in updated_json["products"]))
         result = self.notification.resolve_path("$.products[*].category")
         expected = ["Electronics", "Electronics"]
         self.assertEqual(result, expected)
     
-    def test_update_with_complex_values(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_with_complex_values(self, mock_db_set):
         """Test updating with complex data types (objects, arrays)."""
-        # Update with an object
         new_preferences = {
             "theme": "dark",
             "language": "en",
             "notifications": True
         }
-        self.notification.update_path("$.user.preferences", new_preferences)
-        
+        updated_json = self.notification.update_path("$.user.preferences", new_preferences)
+        self.assertEqual(updated_json["user"]["preferences"], new_preferences)
         result = self.notification.resolve_path("$.user.preferences")
         self.assertEqual(result, new_preferences)
-        
-        # Update with an array
         new_numbers = [10, 20, 30, 40]
-        self.notification.update_path("$.metadata.numbers", new_numbers)
-        
+        updated_json = self.notification.update_path("$.metadata.numbers", new_numbers)
+        self.assertEqual(updated_json["metadata"]["numbers"], new_numbers)
         result = self.notification.resolve_path("$.metadata.numbers")
         self.assertEqual(result, new_numbers)
     
-    def test_update_null_value(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_null_value(self, mock_db_set):
         """Test updating with null/None values."""
-        self.notification.update_path("$.user.middle_name", None)
-        
+        updated_json = self.notification.update_path("$.user.middle_name", None)
+        self.assertIsNone(updated_json["user"]["middle_name"])
         result = self.notification.resolve_path("$.user.middle_name")
         self.assertIsNone(result)
     
     # Creating New Paths Tests
-    def test_create_new_simple_field(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_create_new_simple_field(self, mock_db_set):
         """Test creating a new simple field."""
-        self.notification.update_path("$.user.email", "john@example.com")
-        
+        updated_json = self.notification.update_path("$.user.email", "john@example.com")
+        self.assertEqual(updated_json["user"]["email"], "john@example.com")
         result = self.notification.resolve_path("$.user.email")
         self.assertEqual(result, "john@example.com")
     
-    def test_create_new_nested_field(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_create_new_nested_field(self, mock_db_set):
         """Test creating a new field in existing nested object."""
-        self.notification.update_path("$.user.preferences.notifications", True)
-        
+        updated_json = self.notification.update_path("$.user.preferences.notifications", True)
+        self.assertTrue(updated_json["user"]["preferences"]["notifications"])
         result = self.notification.resolve_path("$.user.preferences.notifications")
         self.assertTrue(result)
     
@@ -665,19 +671,21 @@ class TestINTGWNotificationUpdatePath(FrappeTestCase):
             pass
     
     # Edge Cases and Error Handling
-    def test_update_empty_json_payload(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_empty_json_payload(self, mock_db_set):
         """Test updating when JSON payload is empty."""
         self.notification.set("json_payload", "")
-        self.notification.update_path("$.new_field", "new_value")
-        
+        updated_json = self.notification.update_path("$.new_field", "new_value")
+        self.assertEqual(updated_json["new_field"], "new_value")
         result = self.notification.resolve_path("$.new_field")
         self.assertEqual(result, "new_value")
     
-    def test_update_null_json_payload(self):
+    @patch.object(INTGWNotification, 'db_set')
+    def test_update_null_json_payload(self, mock_db_set):
         """Test updating when JSON payload is None."""
         self.notification.set("json_payload", None)
-        self.notification.update_path("$.new_field", "new_value")
-        
+        updated_json = self.notification.update_path("$.new_field", "new_value")
+        self.assertEqual(updated_json["new_field"], "new_value")
         result = self.notification.resolve_path("$.new_field")
         self.assertEqual(result, "new_value")
     

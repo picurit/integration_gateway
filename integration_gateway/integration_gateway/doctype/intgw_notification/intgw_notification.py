@@ -119,7 +119,7 @@ class INTGWNotification(Document):
 			raise DataError(f"Unexpected error resolving path '{path}': {str(e)}")
 
 	@frappe.whitelist(methods=["POST", "PUT", "PATCH"])
-	def update_path(self, path: str, value: Any, field_name: str = 'json_payload') -> None:
+	def update_path(self, path: str, value: Any, field_name: str = 'json_payload') -> Any:
 		"""
 		Updates a value at the specified JSONPath location in the field content.
 		
@@ -138,13 +138,11 @@ class INTGWNotification(Document):
 		# Input validation
 		if not isinstance(path, str):
 			raise ValidationError(f"Path must be a string, got {type(path).__name__}")
-			
 		if not path.strip():
 			raise ValidationError("Path cannot be empty or whitespace")
-			
 		if not isinstance(field_name, str):
 			raise ValidationError(f"Field name must be a string, got {type(field_name).__name__}")
-		
+
 		try:
 			# Get the field value
 			field_value = self.get(field_name)
@@ -162,13 +160,11 @@ class INTGWNotification(Document):
 					)
 					raise DataError(f"Invalid JSON in field '{field_name}': {str(e)}")
 			elif isinstance(field_value, (dict, list)):
-				# Already parsed JSON data - make a copy to avoid modifying original
 				json_data = json.loads(json.dumps(field_value))
 			else:
 				# Unsupported data type
 				raise ValidationError(f"Field '{field_name}' must contain JSON string or object, got {type(field_value).__name__}")
-			
-			# Compile JSONPath
+
 			try:
 				jsonpath_expr = parse(path)
 			except JSONPathError as e:
@@ -188,9 +184,7 @@ class INTGWNotification(Document):
 			try:
 				# Find existing matches
 				matches = jsonpath_expr.find(json_data)
-				
 				if matches:
-					# Update existing paths using jsonpath-ng's update method
 					jsonpath_expr.update(json_data, value)
 				else:
 					# No matches found - check if path contains wildcards
@@ -202,11 +196,14 @@ class INTGWNotification(Document):
 						# For simple paths, try to create the path manually
 						self._create_path(json_data, path, value)
 				
-				# Update the document field
-				self.set(field_name, json.dumps(json_data))
-				
+				# Persist the change to the database
+				formatted_json = json.dumps(json_data, indent=4, ensure_ascii=False)
+				self.db_set(field_name, formatted_json)
+				# Also update the in-memory value
+				self.set(field_name, formatted_json)
+
+				return json_data
 			except DataError:
-				# Re-raise DataError as-is
 				raise
 			except Exception as e:
 				frappe.log_error(
@@ -214,20 +211,17 @@ class INTGWNotification(Document):
 					title="INTGWNotification JSONPath Update Error"
 				)
 				raise DataError(f"Failed to update path '{path}': {str(e)}")
-				
 		except (ValidationError, DataError):
-			# Re-raise our custom exceptions
 			raise
 		except Exception as e:
-			# Catch any unexpected exceptions
 			frappe.log_error(
 				message=f"Unexpected error in update_path: {str(e)}",
 				title="INTGWNotification Unexpected Error"
 			)
 			raise DataError(f"Unexpected error updating path '{path}': {str(e)}")
 
-	@frappe.whitelist(methods=["POST", "DELETE"])
-	def delete_path(self, path: str, field_name: str = 'json_payload') -> None:
+	@frappe.whitelist(methods=["POST"])
+	def delete_path(self, path: str, field_name: str = 'json_payload') -> Any:
 		"""
 		Deletes values at the specified JSONPath location from the field content.
 		
@@ -245,23 +239,18 @@ class INTGWNotification(Document):
 		# Input validation
 		if not isinstance(path, str):
 			raise ValidationError(f"Path must be a string, got {type(path).__name__}")
-			
 		if not path.strip():
 			raise ValidationError("Path cannot be empty or whitespace")
-			
 		if not isinstance(field_name, str):
 			raise ValidationError(f"Field name must be a string, got {type(field_name).__name__}")
-		
+
 		try:
 			# Get the field value
 			field_value = self.get(field_name)
 			
 			# Handle empty or None field
 			if field_value is None or (isinstance(field_value, str) and not field_value.strip()):
-				# Nothing to delete
-				return
-				
-			# Parse JSON data if it's a string
+				return {}
 			if isinstance(field_value, str):
 				try:
 					json_data = json.loads(field_value)
@@ -299,32 +288,30 @@ class INTGWNotification(Document):
 				# Use jsonpath-ng's update functionality to set values to None, then clean up
 				# This is more reliable than trying to manually navigate the structure
 				matches = jsonpath_expr.find(json_data)
-				
 				if not matches:
 					# Nothing to delete - this is not an error
-					return
-				
-				# Set all matching paths to None first
+					return json_data
 				jsonpath_expr.update(json_data, None)
 				
 				# Clean up None values from the structure
 				self._clean_none_values(json_data)
+
+				# Persist the change to the database
+				formatted_json = json.dumps(json_data, indent=4, ensure_ascii=False)
+				self.db_set(field_name, formatted_json)
+				# Also update the in-memory value
+				self.set(field_name, formatted_json)
 				
-				# Update the document field
-				self.set(field_name, json.dumps(json_data))
-				
+				return json_data
 			except Exception as e:
 				frappe.log_error(
 					message=f"Error deleting JSONPath '{path}': {str(e)}",
 					title="INTGWNotification JSONPath Delete Error"
 				)
 				raise DataError(f"Failed to delete path '{path}': {str(e)}")
-				
 		except (ValidationError, DataError):
-			# Re-raise our custom exceptions
 			raise
 		except Exception as e:
-			# Catch any unexpected exceptions
 			frappe.log_error(
 				message=f"Unexpected error in delete_path: {str(e)}",
 				title="INTGWNotification Unexpected Error"
