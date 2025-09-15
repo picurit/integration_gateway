@@ -20,7 +20,9 @@
   "column_break_errj",
   "field_reference",
   "column_break_xfpk",
-  "value_reference"
+  "value_reference",
+  "section_break_ktxl",
+  "scope"
  ],
  "fields": [
   {
@@ -90,11 +92,20 @@
   {
    "fieldname": "section_break_ygfe",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_ktxl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scope",
+   "fieldtype": "Data",
+   "label": "Scope"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-06 13:22:23.832425",
+ "modified": "2025-09-15 08:10:50.047963",
  "modified_by": "Administrator",
  "module": "Integration Gateway",
  "name": "INTGW Notification",
