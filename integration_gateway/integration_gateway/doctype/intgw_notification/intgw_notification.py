@@ -198,9 +198,9 @@ class INTGWNotification(Document):
 				
 				# Persist the change to the database
 				formatted_json = json.dumps(json_data, indent=4, ensure_ascii=False)
-				self.db_set(field_name, formatted_json)
 				# Also update the in-memory value
 				self.set(field_name, formatted_json)
+				self.save()
 
 				return json_data
 			except DataError:
@@ -298,9 +298,9 @@ class INTGWNotification(Document):
 
 				# Persist the change to the database
 				formatted_json = json.dumps(json_data, indent=4, ensure_ascii=False)
-				self.db_set(field_name, formatted_json)
 				# Also update the in-memory value
 				self.set(field_name, formatted_json)
+				self.save()
 				
 				return json_data
 			except Exception as e:

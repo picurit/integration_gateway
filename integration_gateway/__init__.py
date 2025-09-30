@@ -1,4 +1,4 @@
-__version__ = "v1.0.0-alpha.0"
+__version__ = "1.0.0-alpha.2"
 
 # Monkey Patching overrides for standard Frappe Doctypes
 
